@@ -1,11 +1,6 @@
 import { VariantProps, cva } from "class-variance-authority";
-import {
-  ElementType,
-  FC,
-  forwardRef,
-  HTMLAttributes,
-  ReactElement,
-} from "react";
+import { ElementType, forwardRef, ReactElement, ForwardedRef } from "react";
+import { PolymorphicComponentPropsWithRef } from "../utils/polmorphicsTypes";
 import { cn } from "../utils/utils";
 
 const textStyles = cva("w-full", {
@@ -47,25 +42,30 @@ const textStyles = cva("w-full", {
   },
 });
 
-interface TextProps
-  extends HTMLAttributes<HTMLParagraphElement>,
-    VariantProps<typeof textStyles> {}
+type TextVariantProps = VariantProps<typeof textStyles>;
 
-export const Text: FC<TextProps> = forwardRef<HTMLParagraphElement, TextProps>(
-  (
-    { children, emphasis, size, weight, align, italic, underline, className, ...props },
-    ref
-  ) => {
-    return (
-      <p
-        className={cn(
-          textStyles({ emphasis, size, weight, align, italic, className, underline })
-        )}
-        {...props}
-        ref={ref}
-      >
-        {children}
-      </p>
-    );
-  }
-);
+type TextProps<C extends ElementType> = PolymorphicComponentPropsWithRef<C, TextVariantProps>;
+
+type TextComponent = <C extends ElementType = "p">(props: TextProps<C>) => ReactElement | null;
+
+const TextRender = <C extends ElementType = "p">(
+  { as, children, emphasis, size, weight, align, italic, underline, className, ...props }: TextProps<C>,
+  ref: ForwardedRef<any>
+) => {
+  const Component = as || "p";
+
+  return (
+    <Component
+      ref={ref}
+      className={cn(
+        textStyles({ emphasis, size, weight, align, italic, underline }),
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </Component>
+  );
+};
+
+export const Text = forwardRef(TextRender) as TextComponent;
