@@ -46,13 +46,13 @@ type TextVariantProps = VariantProps<typeof textStyles>;
 
 type TextProps<C extends ElementType> = PolymorphicComponentPropsWithRef<C, TextVariantProps>;
 
-type TextComponent = <C extends ElementType = "span">(props: TextProps<C>) => ReactElement | null;
+type TextComponent = <C extends ElementType = "p">(props: TextProps<C>) => ReactElement | null;
 
-const TextRender = <C extends ElementType = "span">(
+const TextRender = <C extends ElementType = "p">(
   { as, children, emphasis, size, weight, align, italic, underline, className, ...props }: TextProps<C>,
   ref: ForwardedRef<any>
 ) => {
-  const Component = as || "span";
+  const Component = as || "p";
 
   return (
     <Component
